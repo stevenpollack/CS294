@@ -1,5 +1,5 @@
-class person(height: Float, weight: Float) {
-	override def toString() = {
-		println("person's height is "+this.height+" and their weight is "+this.weight)
+class person(height: Double, weight: Double) {
+	override def toString(): String = {
+		"person's height is "+this.height+" and their weight is "+this.weight
 	}
 }
