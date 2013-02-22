@@ -1,0 +1,5 @@
+this is a document
+there are some animals
+
+last line ends in
+42
