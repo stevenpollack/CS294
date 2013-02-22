@@ -7,7 +7,7 @@ import BIDMat.Plotting._
 object testbidmat {
 	def main(args: Array[String]): Unit = {
 		println("before")
-//		val a = rand(30,30)
-//		println(a)
+		val a = rand(30,30)
+		println(a)
  }
 }
