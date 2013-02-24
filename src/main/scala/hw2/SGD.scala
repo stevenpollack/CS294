@@ -24,8 +24,8 @@ class SGD(val numOfFeatures: Int, stepSize: Int => Float, gradLossFxn: (FMat,SMa
 		val n = Y.length
 		
 		// calculate new betaHat
-		val newBetaHat = this.betaHat - ( stepSize(stepCount) / n) *@ sum(gradLossFxn(this.betaHat, X, Y),2)
-		
+		val newBetaHat = this.betaHat - ( stepSize(stepCount+1) / n) *@ sum(gradLossFxn(this.betaHat, X, Y),2)
+		println("betaHat is: "+this.betaHat+", grad is:"+sum(gradLossFxn(this.betaHat, X, Y),2))
 		this.stepCount += 1	
 
 		// check for convergence

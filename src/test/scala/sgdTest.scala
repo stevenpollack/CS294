@@ -14,19 +14,20 @@ import org.scalatest.prop._
 class SGDSuite extends FreeSpec with PropertyChecks with ShouldMatchers {
 	"A Regression Model" - {
 		"should predict shit right" in {
-			val n = 1e3
+			val n = 1e5
 
 			val X = normrnd(0,1,1,n.toInt)
 			val Z = normrnd(0,25,1,n.toInt)
-
 			val data = sparse(X on X *@ X)
-
-			val Y = X + X*@X + Z
+			val Y = (X + X*@X + Z).t
 
 			val sgd = new SGD(2, x => 1/(x.toFloat), gradSquaredError)
 
-			
-			
+			for (j <- 0 until data.ncols) {
+				sgd.updateBetaHat(data(?,j),Y(j))
+				println(sgd.betaHat)
+			}
+
 			(sum(sgd.betaHat - col(1,1))(0)) should be (0f)
 			
 		}

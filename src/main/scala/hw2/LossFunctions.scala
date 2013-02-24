@@ -46,7 +46,7 @@ object LossFunctions {
 		val numOfFeatures = X.nrows
 		val out = zeros(numOfFeatures,numOfReviews)
 
-		val scaleFactor = 2 * X.Tmult(betaHat,null) - Y
+		val scaleFactor = 2 * (X.Tmult(betaHat,null) - Y)
 
 		for (j <- 0 until numOfReviews) { // look into out.data if slow
 			out(?,j) = scaleFactor(j)*full(X(?,j))
