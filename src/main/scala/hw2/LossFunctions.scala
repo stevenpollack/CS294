@@ -13,7 +13,7 @@ import BIDMat.Plotting._
  * to take advantage of Tmult without transposing all the time
  */
 
-object LossFunctions {
+class LossFunctions {
 	/* holds vectorized versions of standard loss functions
 	* all take column vectors (or matrices) as input and 
 	* return column vectors
@@ -26,6 +26,8 @@ object LossFunctions {
 		sparse(0 until minDim, 0 until minDim, diagEntries, m, n)
 	}
 
+	def oneNorm(x: FMat) = sum(abs(x))
+	def twoNorm(x: FMat) = x dot x
 
 	def absError(betaHat: FMat, X: SMat, Y: FMat): FMat = abs(Y - X.Tmult(betaHat,null))
 
@@ -34,7 +36,7 @@ object LossFunctions {
 	}
 	
 	def squaredError(betaHat: FMat, X: SMat, Y: FMat): FMat = {
-		// avoid casting issues math.pow() by manually squaring
+		// avoid casting issues of math.pow() by manually squaring
 		val absoluteE = absError(betaHat,X,Y) 
 		absoluteE *@ absoluteE
 	}
@@ -48,65 +50,40 @@ object LossFunctions {
 	}
 }
 
-object SGD {
-	/* These don't matter any more -- initialize beta to 0
-	def initializeBetaHat1(reviews: DMat) = {
-		// regardless of the loss, do least squares on a chunk of the data set
-		/* this version supposes Y = X beta,
-		*  Y is a column vector
-		*/
-		val numOfFeatures = reviews.nrows
-		val numOfReviews = reviews.ncols
-		val reviewsT = reviews.t
-		val X = reviewsT(?,0 until numOfFeatures -1)
-		val Y = reviewsT(?,numOfFeatures-1)
-		val betaHat = (X.t * X).inv * X.t * Y 
-		betaHat
-		
 
+class SGD(val numOfFeatures: Int, stepSize: Int => Float, gradLossFxn: (FMat,SMat,FMat) => FMat) extends LossFunctions{
+
+	var betaHat = FMat(zeros(numOfFeatures,1)) // initialize betaHat to zeros
+	var stepCount = 0
+
+	val maxSteps = 1e4
+	val convergenceThreshold = 1e-7
+
+	var oneNormConvergence = false
+	var twoNormConvergence = false
+	
+
+	def updateBetaHat(X: SMat, Y: FMat) = {
+		val n = Y.length
+		
+		// calculate new betaHat
+		val newBetaHat = this.betaHat - ( stepSize(stepCount) / n) *@ sum(gradLossFxn(this.betaHat, X, Y),2)
+		
+		this.stepCount += 1	
+
+		// check for convergence
+		this.oneNormConvergence = (oneNorm(newBetaHat-this.betaHat)(0) < this.convergenceThreshold)
+		this.twoNormConvergence = (twoNorm(newBetaHat-this.betaHat)(0) < this.convergenceThreshold)
+
+		this.betaHat = newBetaHat
 	}
 
-	def initializeBetaHat2(reviews: DMat) = {
-		/* this version suppose Y = beta X, 
-		* Y is a row vector
-		*/
-		val numOfFeatures = reviews.nrows
-		val numOfReviews = reviews.ncols
-		val Yt = dzeros(numOfReviews,1)
-		for (j <- 0 until numOfReviews) { // not sure if speed benefit for Yt.data vs. Yt(i)
-			Yt.data(j) = reviews.data( (j+1)*numOfFeatures - 1 )
-		}
-		val X = reviews(0 until numOfFeatures-1,?)
-
-		val betaHatTrans = (X * X.t).inv * X * Yt 
-		betaHatTrans.t // return a column vector 
-	} */
 }
 
-class SGD(val numOfFeatures: Int, val stepSize: DMat, gradLossFxn: (DMat,DMat)=>DMat, babyTrainingSet: DMat) {
-	// if (stepSize.length > 1) { // allow for dynamic learning rate
-	// 	val maxSteps = alpha.length
-	// } else {
-	// 	val maxSteps = -1
-	// }
+/*object SGD with LossFunctions {
 
-	// override def toString(): String = {
-	// 	if (maxSteps > -1) {
-	// 		"Initialized SGD with dynamic learning rate, and termination clause: "+maxSteps+" steps"
-	// 	} else {
-	// 		"Initialized SGD with scalar learning rate: "+stepSize
-	// 	}
-	// }
-
-	// var betaHat = initializeBetaHat2(babyTrainingSet)
-	// if (betaHat.length != numOfFeatures) { // in this case, we initialized on a small set
-	// 	// so fill out betaHat
-	// 	betaHat = betaHat.vertcat(dzeros(1,numOfFeatures-betaHat.length))
-	// }
 }
-
-
-
+*/
 class ADAGRAD(val stepSize: Float,lossFxn: (DMat,DMat)=>DMat, gradLossFxn: (DMat,DMat)=>DMat) {
 	override def toString(): String = {
 		"initializing ADAGRAD with stepSize = "+stepSize+" and loss function:"+lossFxn
