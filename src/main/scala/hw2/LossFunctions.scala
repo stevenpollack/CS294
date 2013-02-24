@@ -45,7 +45,7 @@ class LossFunctions {
 		// not sure how fast this matrix algebra will be. =(
 		val m = X.nrows 
 		val n = X.ncols
-		val colScales = makeMbyNDiagMat(m,n,(2 * betaHat * X - Y))
+		val colScales = makeMbyNDiagMat(m,n,(2 * X.Tmult(betaHat,null) - Y))
 		colScales * X  
 	}
 }
