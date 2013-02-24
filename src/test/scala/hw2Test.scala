@@ -1,9 +1,8 @@
-import hw2
 import org.scalatest._
 import org.scalatest.matchers._
 import org.scalatest.prop._
 
-class ModelSuite class SomeOtherTest extends FreeSpec with PropertyChecks with ShouldMatchers {
+class ModelSuite extends FreeSpec with PropertyChecks with ShouldMatchers {
 	"A Regression Model" - {
 		"should take a non-null loss function as input" - {
 			pending

@@ -22,40 +22,44 @@ class PersonSpec extends FlatSpec {
 
 class SomeOtherTest extends FreeSpec with PropertyChecks with ShouldMatchers {
 	"Simple Integers" - {
-		"should exhibit associative behavior" - {
-			"additive associativity:" in {
-				forAll { (a: Int, b: Int, c: Int) =>
-					((a+b)+c) should be (a+(b+c))
-				}	
-			}
-			"multiplicative associativity:" in {
-				forAll {(a: Int, b: Int, c: Int) =>
-					((a*b)*c) should be (a*(b*c))
-				}
-			}
-		}
-
-		"should exhibit commutativity" - {
-			"additive associativity:" in {
-				forAll { (a: Int, b: Int) =>
-					(a+b) should be (b+a)	
-				}
-			}
-			"multiplicative associativity:" in {
-				pending
-			}
-		}
-
-		"have that (-a^2)*(-b^2) > 0" - {
-			forAll{ (a: Int, b: Int) =>
-				whenever (a < 0 && b < 0) {
-					val product: Double = (a toDouble)*(b toDouble)
-					product should be >= (0.0)
-				}
-
-			}
+		"should have some uniqueness" in {
+			(1) should be (1)
 		}
 	}
+	// 	"should exhibit associative behavior" - {
+	// 		"additive associativity:" in {
+	// 			forAll { (a: Int, b: Int, c: Int) =>
+	// 				((a+b)+c) should be (a+(b+c))
+	// 			}	
+	// 		}
+	// 		"multiplicative associativity:" in {
+	// 			forAll {(a: Int, b: Int, c: Int) =>
+	// 				((a*b)*c) should be (a*(b*c))
+	// 			}
+	// 		}
+	// 	}
+
+	// 	"should exhibit commutativity" - {
+	// 		"additive associativity:" in {
+	// 			forAll { (a: Int, b: Int) =>
+	// 				(a+b) should be (b+a)	
+	// 			}
+	// 		}
+	// 		"multiplicative associativity:" in {
+	// 			pending
+	// 		}
+	// 	}
+
+	// 	"have that (-a^2)*(-b^2) > 0" - {
+	// 		forAll{ (a: Int, b: Int) =>
+	// 			whenever (a < 0 && b < 0) {
+	// 				val product: Double = (a toDouble)*(b toDouble)
+	// 				product should be >= (0.0)
+	// 			}
+
+	// 		}
+	// 	}
+	// }
 }
 
 class SomeTest extends FeatureSpec with ShouldMatchers with GivenWhenThen {
