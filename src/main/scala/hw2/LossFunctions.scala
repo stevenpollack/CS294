@@ -19,11 +19,10 @@ object LossFunctions {
 	* return column vectors
 	*/
 
-	def makeMbyNDiagMat(m: Int, n:Int, diagEntries: FMat): SMat = {
+	def makeDiagMat(diagEntries: FMat): SMat = {
 		assert(diagEntries.nrows == 1 || diagEntries.ncols == 1, "diagEntries is not a vector!")
-		val minDim: Int = min(m,n)(0)
-		assert(diagEntries.length == minDim, "diagEntries is not the right length!")
-		sparse(0 until minDim, 0 until minDim, diagEntries, m, n)
+		val n = diagEntries.length
+		sparse(0 until n, 0 until n, diagEntries, n, n)
 	}
 
 	def oneNorm(x: FMat) = sum(abs(x))
@@ -43,10 +42,16 @@ object LossFunctions {
 
 	def gradSquaredError(betaHat: FMat, X: SMat, Y: FMat): FMat = {
 		// not sure how fast this matrix algebra will be. =(
-		val m = X.nrows 
-		val n = X.ncols
-		val colScales = makeMbyNDiagMat(m,n,(2 * X.Tmult(betaHat,null) - Y))
-		colScales * X  
+		val numOfReviews = X.ncols
+		val numOfFeatures = X.nrows
+		val out = zeros(numOfFeatures,numOfReviews)
+
+		val scaleFactor = 2 * X.Tmult(betaHat,null) - Y
+
+		for (j <- 0 until numOfReviews) { // look into out.data if slow
+			out(?,j) = scaleFactor(j)*full(X(?,j))
+		}
+		out
 	}
 }
 

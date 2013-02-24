@@ -25,6 +25,8 @@ class SGDSuite extends FreeSpec with PropertyChecks with ShouldMatchers {
 
 			val sgd = new SGD(2, x => 1/(x.toFloat), gradSquaredError)
 
+			
+			
 			(sum(sgd.betaHat - col(1,1))(0)) should be (0f)
 			
 		}
