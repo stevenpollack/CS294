@@ -18,6 +18,15 @@ object LossFunctions {
 	* all take column vectors (or matrices) as input and 
 	* return column vectors
 	*/
+
+	def makeMbyNDiagMat(m: Int, n:Int, diagEntries: FMat): SMat = {
+		assert(diagEntries.nrows == 1 || diagEntries.ncols == 1, "diagEntries is not a vector!")
+		val minDim: Int = min(m,n)(0)
+		assert(diagEntries.length == minDim, "diagEntries is not the right length!")
+		sparse(0 until minDim, 0 until minDim, diagEntries, m, n)
+	}
+
+
 	def absError(betaHat: FMat, X: SMat, Y: FMat): FMat = abs(Y - X.Tmult(betaHat,null))
 
 	def gradAbsError(betaHat: FMat, X: SMat, Y: FMat): FMat = {
@@ -32,7 +41,10 @@ object LossFunctions {
 
 	def gradSquaredError(betaHat: FMat, X: SMat, Y: FMat): FMat = {
 		// not sure how fast this matrix algebra will be. =(
-		X * (2 * betaHat * X - Y) 
+		val m = X.nrows 
+		val n = X.ncols
+		val colScales = makeMbyNDiagMat(m,n,(2 * betaHat * X - Y))
+		colScales * X  
 	}
 }
 
